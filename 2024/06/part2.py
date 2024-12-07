@@ -19,6 +19,44 @@ def get_data(file:str) -> np.ndarray[str]:
         return np.array([list(line.strip()) for line in f])
 
 
+def solve(data:np.ndarray[str]) -> np.ndarray[str]:
+
+    loc = np.where(data == "^")
+    r,c = loc[0][0],loc[1][0]
+
+    data[r,c] = 'X'
+
+    try:
+
+        while True:
+
+            arr = data[:r,c]
+            i = np.where(arr == '#')[0][-1]
+            arr[i+1:] = "X"
+            r = i + 1
+
+            arr = data[r,c+1:]
+            i = np.where(arr == '#')[0][0]
+            arr[:i] = "X"
+            c += i
+
+            arr = data[r+1:,c]
+            i = np.where(arr == '#')[0][0]
+            arr[:i] = "X"
+            r += i
+
+            arr = data[r,:c]
+            i = np.where(arr == '#')[0][-1]
+            arr[i+1:] = "X"
+            c = i + 1
+
+    except IndexError:
+
+        arr[:] = "X"
+        data[loc[0][0],loc[1][0]] = "^"
+        return data
+
+
 def compute(data:np.ndarray[str]) -> None:
 
     loc = np.where(data == "^")
@@ -31,14 +69,13 @@ def compute(data:np.ndarray[str]) -> None:
     for x in it:
 
         r,c = gr,gc
-        data[r,c] = "^"
         cell = it.multi_index
 
-        if data[cell] in ["#","^"]:
+        if data[cell] != "X":
             continue
 
         if prev_cell:
-            data[prev_cell] = "."
+            data[prev_cell] = "X"
 
         data[cell] = '#'
 
@@ -81,6 +118,7 @@ def compute(data:np.ndarray[str]) -> None:
 def main() -> None:
 
     data = get_data(sys.argv[1])
+    data = solve(data)
     compute(data)
 
 
