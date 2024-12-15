@@ -18,41 +18,27 @@ def compute(arr:List[List[int]]) -> None:
     ROWS=103
     COLS=101
 
-    # assume there will be a bock of robots in the final picture, as we are not told anything else
-    # increment this manually from 2 until we get a hit on the final grid
-    sp= 3
-    search_pattern = np.full((sp,sp), '#')
+    grid = np.zeros((ROWS,COLS), dtype=int)
 
-    grid = np.full((ROWS,COLS), ".")
+    d=[]
+    stdmin = 99999999
 
-    moves = 0
-    solved = False
+    for moves in range (101*103):
 
-    while not solved:
-        moves += 1
         for c,r,dc,dr in arr:
             r = (r + moves*dr) % ROWS
             c = (c + moves*dc) % COLS
-            grid[r,c] = '#'
+            grid[r,c] += 1
 
-        for i in range(ROWS*COLS):
-            r = i // ROWS
-            c = i % COLS
+        std = np.std(grid)
+        if std < stdmin:
+            stdmin = std
+            result = moves
+            d.append(grid.copy())
 
-            if grid[r,c] == ".":
-                continue
+        grid.fill(0)
 
-            if r > ROWS - sp or c > COLS - sp:
-                continue
-
-            if np.all(search_pattern == grid[r:r+sp,c:c+sp]):
-                solved = True
-                for line in grid:
-                    print(''.join(line))
-                break
-        grid.fill('.')
-
-    result = moves
+    print(d[-1])
     print(result)
 
     answer = 6577
