@@ -1,10 +1,13 @@
 from functools import wraps
 from timeit import default_timer
+from typing import Callable, ParamSpec, TypeVar
 
+P = ParamSpec('P')
+T = TypeVar('T')
 
-def timer(func):
+def timer(func: Callable[P, T]) -> Callable[P, T]:
     @wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
         start_time = default_timer()
         result = func(*args, **kwargs)
         end_time = default_timer()
