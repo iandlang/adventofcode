@@ -9,7 +9,8 @@ def solve(data: list[tuple[str, int]]) -> int:
     zeros = 0
     delta = {"L": -1, "R": 1}
     for direction, clicks in data:
-        for _ in range(clicks):
+        zeros += clicks // 100
+        for _ in range(clicks % 100):
             pos = (pos + delta[direction]) % 100
             zeros += pos == 0
     return zeros
