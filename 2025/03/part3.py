@@ -1,0 +1,2 @@
+def get_max_value(line: str, w: int, d: int = 1) -> str: return max(line[:w]) if d == 12 else (mv := max(line[:w])) + get_max_value(line[(mvi := line.index(mv))+1:], w - mvi, d + 1)
+with open("data.txt") as f: print(sum(int(get_max_value(line, w = len(line) - 12 + 1)) for line in f.read().splitlines()))
