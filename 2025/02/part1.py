@@ -15,9 +15,17 @@ def solve(data: list[tuple[int, int]]) -> int:
                 i = 10 ** n
                 continue
             mp = n // 2
-            if s[mp:] == s[:mp]:
+            smp1, smp2 = s[:mp], s[mp:]
+            if smp1 < smp2:
+                i = (int(smp1) + 1) * 10 ** mp + 1
+                continue
+            elif smp1 == smp2:
                 result += i
-            i += 1
+                i = (int(smp1) + 1) * 10 ** mp + 1
+                continue
+            elif smp1 > smp2:
+                i = int(smp1 * 2)
+                continue
     return result
 
 @timer
