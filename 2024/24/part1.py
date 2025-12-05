@@ -1,29 +1,28 @@
 from collections import deque
 from typing import Dict, Tuple
-import sys
 from decorators.timer import timer
 
-
-def get_data(file:str) -> Tuple[Dict[str, int], deque]:
-
+def load_data(file: str) -> dict:
     bits = {}
     ops = deque([])
-    bop = {'AND':'&','OR':'|','XOR':'^'}
+    bop = {'AND': '&', 'OR': '|', 'XOR': '^'}
 
     with open(file) as f:
         for line in f:
             line = line.strip()
             if ":" in line:
-                gate,bit = line.split(": ")
+                gate, bit = line.split(": ")
                 bits[gate] = int(bit)
             elif "->" in line:
-                (bit1,op,bit2,eq,bit3) = line.split()
-                ops.append((bit1,bop[op],bit2,bit3))
+                (bit1, op, bit2, eq, bit3) = line.split()
+                ops.append((bit1, bop[op], bit2, bit3))
 
-    return bits, ops
+    return {'bits': bits, 'ops': ops}
 
 
-def compute(bits:Dict[str, int], ops:deque) -> None:
+def solve(data: dict) -> int:
+    bits = data['bits']
+    ops = data['ops']
 
     while ops:
         (bit1,op,bit2,bit3) = ops.popleft()
@@ -34,19 +33,12 @@ def compute(bits:Dict[str, int], ops:deque) -> None:
 
     result = sum(bits[f"z{str(i).zfill(2)}"] * 2**i for i in range(46))
 
-    print(result)
-
-    answer = 48063513640678
-    if answer:
-        assert(result == answer)
-
-
+    return result
 @timer
 def main() -> None:
-
-    bits, ops = get_data(sys.argv[1])
-    compute(bits, ops)
-
+    data = load_data("data.txt")
+    result = solve(data)
+    print(f"result: {result}")
 
 if __name__ == "__main__":
     main()

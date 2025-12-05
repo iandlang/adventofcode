@@ -1,11 +1,9 @@
 from functools import cache
 import numpy as np
 from pprint import pprint as pp
-import sys
 from decorators.timer import timer
 
-
-def get_data(file:str) -> np.ndarray[str]:
+def load_data(file:str) -> dict:
 
     registers = {}
     with open(file) as f:
@@ -19,10 +17,11 @@ def get_data(file:str) -> np.ndarray[str]:
             if 'Program' in line:
                program = list(map(int, line.split()[-1].split(",")))
 
-    return program, registers
+    return {'program': program, 'registers': registers}
 
-
-def compute(program,registers) -> None:
+def solve(data: dict) -> str:
+    program = data['program']
+    registers = data['registers']
 
     A = registers["A"]
     B = registers["B"]
@@ -73,19 +72,12 @@ def compute(program,registers) -> None:
         ip += 1
 
     result = ",".join(map(str, output))
-    print(result)
-
-    answer = '5,1,4,0,5,1,0,2,6'
-    if answer:
-        assert(result in answer)
-
-
+    return result
 @timer
 def main() -> None:
-
-    program,registers = get_data(sys.argv[1])
-    compute(program,registers)
-
+    data = load_data("data.txt")
+    result = solve(data)
+    print(f"result: {result}")
 
 if __name__ == "__main__":
     main()

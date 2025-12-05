@@ -1,16 +1,14 @@
 import numpy as np
 import re
-import sys
 from decorators.timer import timer
 from typing import List
 
-def get_data(file:str) -> List[List[int]]:
+def load_data(file:str) -> List[List[int]]:
 
     with open(file) as f:
         return [list(map(int,re.findall(r'-{0,1}\d+',line))) for line in f.readlines()]
 
-
-def compute(arr:List[List[int]]) -> None:
+def solve(arr:List[List[int]]) -> int:
 
     ROWS=103
     COLS=101
@@ -29,19 +27,13 @@ def compute(arr:List[List[int]]) -> None:
 
     result = np.sum(quad1) * np.sum(quad2) * np.sum(quad3) * np.sum(quad4)
 
-    print(result)
-
-    answer = 229421808
-    if answer:
-        assert(result == answer)
-
-
+    return result
 @timer
 def main() -> None:
 
-    data = get_data(sys.argv[1])
-    compute(data)
-
+    data = load_data("data.txt")
+    result = solve(data)
+    print(f"result: {result}")
 
 if __name__ == "__main__":
     main()

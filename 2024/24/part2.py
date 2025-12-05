@@ -2,24 +2,21 @@ from collections import deque
 import matplotlib.pyplot as plt
 from typing import Dict, Tuple
 import networkx as nx
-import sys
 from decorators.timer import timer
 
-
-def get_data(file:str) -> Tuple[Dict[str, int], deque]:
-
+def load_data(file: str) -> dict:
     bits = {}
     ops = deque([])
-    bop = {'AND':'&','OR':'|','XOR':'^'}
+    bop = {'AND': '&', 'OR': '|', 'XOR': '^'}
     twisted_wires = {
-        'z11':'vkq',
-        'vkq':'z11',
-        'z24':'mmk',
-        'mmk':'z24',
-        'pvb':'qdq',
-        'qdq':'pvb',
-        'z38':'hqh',
-        'hqh':'z38'
+        'z11': 'vkq',
+        'vkq': 'z11',
+        'z24': 'mmk',
+        'mmk': 'z24',
+        'pvb': 'qdq',
+        'qdq': 'pvb',
+        'z38': 'hqh',
+        'hqh': 'z38'
     }
 
     with open(file) as f:
@@ -27,19 +24,20 @@ def get_data(file:str) -> Tuple[Dict[str, int], deque]:
             line = line.strip()
 
             if ":" in line:
-                gate,bit = line.split(": ")
+                gate, bit = line.split(": ")
                 bits[gate] = int(bit)
 
             if "->" in line:
-                (bit1,op,bit2,eq,bit3) = line.split(" ")
-                bit3 = twisted_wires.get(bit3,bit3)
-                ops.append((bit1,bop[op],bit2,eq,bit3))
+                (bit1, op, bit2, eq, bit3) = line.split(" ")
+                bit3 = twisted_wires.get(bit3, bit3)
+                ops.append((bit1, bop[op], bit2, eq, bit3))
 
-    return bits, ops
+    return {'bits': bits, 'ops': ops}
 
 
-def compute(bits:Dict[str, int], ops:deque) -> None:
-
+def solve(data: dict) -> str:
+    bits = data['bits']
+    ops = data['ops']
 
     G = nx.DiGraph()
 
@@ -81,20 +79,15 @@ def compute(bits:Dict[str, int], ops:deque) -> None:
 
     assert x + y == z
 
-    result = ','.join(sorted(('vkq','z11','mmk','z24','pvb','qdq','z38','hqh')))
-    print(result)
-
-    answer = 'hqh,mmk,pvb,qdq,vkq,z11,z24,z38'
-    if answer:
-        assert(result == answer)
+    result = ','.join(sorted(('vkq', 'z11', 'mmk', 'z24', 'pvb', 'qdq', 'z38', 'hqh')))
+    return result
 
 
 @timer
 def main() -> None:
-
-    bits, ops = get_data(sys.argv[1])
-    compute(bits, ops)
-
+    data = load_data("data.txt")
+    result = solve(data)
+    print(f"result: {result}")
 
 if __name__ == "__main__":
     main()

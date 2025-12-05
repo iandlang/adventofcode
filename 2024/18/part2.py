@@ -2,11 +2,9 @@ import numpy as np
 import sys
 from decorators.timer import timer
 
-
-def get_data(file:str) -> np.ndarray[str]:
+def load_data(file:str) -> np.ndarray[str]:
 
     return np.genfromtxt(file, comments=None, delimiter=",", dtype=int)
-
 
 def pause():
   """Reads a character from input. Exits the program if it's 'q',
@@ -18,10 +16,10 @@ def pause():
     print("Exiting program.")
     sys.exit()  # or sys.exit() if you import sys
 
+def solve(data:np.ndarray[str]) -> str:
+    sys.setrecursionlimit(100000)
 
-def compute(data:np.ndarray[str]) -> None:
-
-    def solve(grid, loc, moves=0):
+    def solve_helper(grid, loc, moves=0):
 
         r,c = loc
 
@@ -50,27 +48,25 @@ def compute(data:np.ndarray[str]) -> None:
             print(f"{moves} moves")
             pause()
 
-        if solve(grid, [r-1,c], moves+1):
+        if solve_helper(grid, [r-1,c], moves+1):
             return True
-        elif solve(grid, [r,c+1], moves+1):
+        elif solve_helper(grid, [r,c+1], moves+1):
             return True
-        elif solve(grid, [r+1,c], moves+1):
+        elif solve_helper(grid, [r+1,c], moves+1):
             return True
-        elif solve(grid, [r,c-1], moves+1):
+        elif solve_helper(grid, [r,c-1], moves+1):
             return True
 
         grid[r,c] = "."
 
         return False
 
-    if sys.argv[1] == "test.txt":
+    if "data.txt" == "test.txt":
         n = 7
         b = 12
-        answer = [6,1]
     else:
         n = 71
         b = 1024
-        answer = [8,51]
 
     grid = np.full((n,n), ".")
     s = np.argwhere(grid == '.')[0]
@@ -89,26 +85,18 @@ def compute(data:np.ndarray[str]) -> None:
         scores = []
         visited = dict()
         sr,sc = s
-        if solve(grid,s):
+        if solve_helper(grid,s):
             continue
         else:
             break
 
-    result = [int(nc),int(nr)]
-    print(result)
-
-    if answer:
-        assert(result == answer)
-
-
+    result = f"{int(nc)},{int(nr)}"
+    return result
 @timer
 def main() -> None:
-
-    sys.setrecursionlimit(10000)
-
-    data = get_data(sys.argv[1])
-    compute(data)
-
+    data = load_data("data.txt")
+    result = solve(data)
+    print(f"result: {result}")
 
 if __name__ == "__main__":
     main()

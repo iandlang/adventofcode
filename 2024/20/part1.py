@@ -2,8 +2,7 @@ import numpy as np
 import sys
 from decorators.timer import timer
 
-
-def get_data(file:str) -> np.ndarray[str]:
+def load_data(file:str) -> np.ndarray[str]:
 
     with open(file) as f:
          grid = f.read()
@@ -12,10 +11,10 @@ def get_data(file:str) -> np.ndarray[str]:
 
     return grid
 
+def solve(grid:np.ndarray[str]) -> int:
+    sys.setrecursionlimit(100000)
 
-def compute(grid:np.ndarray[str]) -> None:
-
-    def solve(grid, loc, moves=0):
+    def solve_helper(grid, loc, moves=0):
 
         r,c = loc
 
@@ -43,26 +42,25 @@ def compute(grid:np.ndarray[str]) -> None:
             print(f"{moves} moves")
             pause()
 
-        if solve(grid, [r-1,c], moves+1):
+        if solve_helper(grid, [r-1,c], moves+1):
             return True
-        elif solve(grid, [r,c+1], moves+1):
+        elif solve_helper(grid, [r,c+1], moves+1):
             return True
-        elif solve(grid, [r+1,c], moves+1):
+        elif solve_helper(grid, [r+1,c], moves+1):
             return True
-        elif solve(grid, [r,c-1], moves+1):
+        elif solve_helper(grid, [r,c-1], moves+1):
             return True
 
         grid[r,c] = "."
 
         return False
 
-
     n = grid.shape[0]
     s = np.argwhere(grid == 'S')[0]
     e = np.argwhere(grid == 'E')[0]
     visited = np.zeros(grid.shape, dtype=int)
 
-    solve(grid,s)
+    solve_helper(grid,s)
 
     def find_cheats(r,c):
 
@@ -78,22 +76,13 @@ def compute(grid:np.ndarray[str]) -> None:
                     cheats += 1
         return cheats
 
-
     result = sum(find_cheats(r,c) for r in range(n) for c in range(n) if visited[r,c] > 0)
-    print(result)
-
-    answer = 1384
-    if answer:
-        assert(result == answer)
-
-
+    return result
 @timer
 def main() -> None:
-
-    sys.setrecursionlimit(10000)
-    data = get_data(sys.argv[1])
-    compute(data)
-
+    data = load_data("data.txt")
+    result = solve(data)
+    print(f"result: {result}")
 
 if __name__ == "__main__":
     main()

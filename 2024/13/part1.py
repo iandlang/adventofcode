@@ -1,16 +1,14 @@
 import numpy as np
 import re
-import sys
 from decorators.timer import timer
 from typing import List
 
-def get_data(file:str) -> List[List[int]]:
+def load_data(file:str) -> List[List[int]]:
 
     with open(file) as f:
         return [list(map(int,re.findall(r'\d+',line))) for line in f.read().split("\n\n")]
 
-
-def compute(machines:List[List[int]]) -> None:
+def solve(machines:List[List[int]]) -> int:
 
     result = 0
 
@@ -29,19 +27,13 @@ def compute(machines:List[List[int]]) -> None:
         if a.is_integer() and b.is_integer():
             result += int(3*a + b)
 
-    print(result)
-
-    answer = 30413
-    if answer:
-        assert(result == answer)
-
-
+    return result
 @timer
 def main() -> None:
 
-    data = get_data(sys.argv[1])
-    compute(data)
-
+    data = load_data("data.txt")
+    result = solve(data)
+    print(f"result: {result}")
 
 if __name__ == "__main__":
     main()

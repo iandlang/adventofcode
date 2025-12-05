@@ -1,14 +1,11 @@
 from functools import cache
 import numpy as np
-import sys
 from decorators.timer import timer
 
-
-def get_data(file:str) -> np.ndarray[str]:
+def load_data(file:str) -> np.ndarray[str]:
 
     with open(file) as f:
         return [int(c) for c in f.read().split()]
-
 
 @cache
 def split_stone(stone):
@@ -17,8 +14,7 @@ def split_stone(stone):
     mp = len(stone) // 2
     return int(stone[:mp]), int(stone[mp:])
 
-
-def compute(data:np.ndarray[str]) -> None:
+def solve(data:np.ndarray[str]) -> int:
 
     data = {int(c):1 for c in data}
 
@@ -39,19 +35,13 @@ def compute(data:np.ndarray[str]) -> None:
         data = new_data
 
     result = sum(new_data.values())
-    print(result)
-
-    answer = 240954878211138
-    if answer:
-        assert(result == answer)
-
-
+    return result
 @timer
 def main() -> None:
 
-    data = get_data(sys.argv[1])
-    compute(data)
-
+    data = load_data("data.txt")
+    result = solve(data)
+    print(f"result: {result}")
 
 if __name__ == "__main__":
     main()

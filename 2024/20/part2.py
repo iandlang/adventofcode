@@ -2,16 +2,15 @@ import numpy as np
 import sys
 from decorators.timer import timer
 
-
-def get_data(file:str) -> np.ndarray[str]:
+def load_data(file:str) -> np.ndarray[str]:
 
     with open(file) as f:
         return np.array([list(line) for line in f.read().splitlines()])
 
+def solve(grid:np.ndarray[str]) -> int:
+    sys.setrecursionlimit(100000)
 
-def compute(grid:np.ndarray[str]) -> None:
-
-    def solve(grid, loc, moves=1):
+    def solve_helper(grid, loc, moves=1):
 
         r,c = loc
 
@@ -39,19 +38,18 @@ def compute(grid:np.ndarray[str]) -> None:
             print(f"{moves} moves")
             pause()
 
-        if solve(grid, [r-1,c], moves+1):
+        if solve_helper(grid, [r-1,c], moves+1):
             return True
-        elif solve(grid, [r,c+1], moves+1):
+        elif solve_helper(grid, [r,c+1], moves+1):
             return True
-        elif solve(grid, [r+1,c], moves+1):
+        elif solve_helper(grid, [r+1,c], moves+1):
             return True
-        elif solve(grid, [r,c-1], moves+1):
+        elif solve_helper(grid, [r,c-1], moves+1):
             return True
 
         grid[r,c] = "."
 
         return False
-
 
     def find_cheats(sr,sc,r,c,m):
 
@@ -81,13 +79,12 @@ def compute(grid:np.ndarray[str]) -> None:
         find_cheats(sr,sc,r+1,c,m+1)
         find_cheats(sr,sc,r,c-1,m+1)
 
-
     n = grid.shape[0]
     s = np.argwhere(grid == 'S')[0]
     e = np.argwhere(grid == 'E')[0]
     track = np.zeros(grid.shape, dtype=int)
 
-    solve(grid,s)
+    solve_helper(grid,s)
 
     cheats = {}
     for r in range(n):
@@ -97,20 +94,12 @@ def compute(grid:np.ndarray[str]) -> None:
                 find_cheats(r,c,r,c,0)
 
     result = len(cheats)
-    print(result)
-
-    answer = 1008542
-    if answer:
-        assert(result == answer)
-
-
+    return result
 @timer
 def main() -> None:
-
-    sys.setrecursionlimit(10000)
-    data = get_data(sys.argv[1])
-    compute(data)
-
+    data = load_data("data.txt")
+    result = solve(data)
+    print(f"result: {result}")
 
 if __name__ == "__main__":
     main()

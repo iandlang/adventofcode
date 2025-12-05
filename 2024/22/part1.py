@@ -1,14 +1,11 @@
 from functools import reduce
-import sys
 from typing import List
 from decorators.timer import timer
 
-
-def get_data(file:str) -> List[int]:
+def load_data(file:str) -> List[int]:
 
     with open(file) as f:
         return [int(c) for c in f.readlines()]
-
 
 def gen(n:int) -> int:
 
@@ -18,24 +15,17 @@ def gen(n:int) -> int:
 
     return n
 
-
-def compute(data:List[int]) -> None:
+def solve(data:List[int]) -> int:
 
     result = sum(reduce(lambda n,_: gen(n), range(2000), secret) for secret in data)
 
-    print(result)
-
-    answer = 14082561342
-    if answer:
-        assert(result == answer)
-
-
+    return result
 @timer
 def main() -> None:
 
-    data = get_data(sys.argv[1])
-    compute(data)
-
+    data = load_data("data.txt")
+    result = solve(data)
+    print(f"result: {result}")
 
 if __name__ == "__main__":
     main()

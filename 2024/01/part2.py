@@ -1,21 +1,20 @@
 import numpy as np
-import sys
+from decorators.timer import timer
 
 
-def get_data(file:str) -> np.ndarray:
-
+def load_data(file: str) -> np.ndarray:
     return np.loadtxt(file, dtype=int)
 
 
-def compute(data:np.ndarray) -> None:
+def solve(data: np.ndarray) -> int:
+    return sum(i * np.sum(data[:, 1] == i) for i in data[:, 0])
 
-    print(sum([i * np.sum(data[:,1] == i) for i in data[:,0] ]))
 
-
+@timer
 def main() -> None:
-
-    data = get_data(sys.argv[1])
-    compute(data)
+    data = load_data("data.txt")
+    result = solve(data)
+    print(f"result: {result}")
 
 
 if __name__ == "__main__":

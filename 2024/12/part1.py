@@ -1,14 +1,11 @@
 import numpy as np
-import sys
 from decorators.timer import timer
 
-
-def get_data(file:str) -> np.ndarray[str]:
+def load_data(file:str) -> np.ndarray[str]:
 
     return np.genfromtxt(file, comments=None, converters={0:list})
 
-
-def solve(grid,r,c,regions,region,n):
+def flood_fill(grid,r,c,regions,region,n):
 
     if regions[r,c] > 0:
         return
@@ -18,10 +15,9 @@ def solve(grid,r,c,regions,region,n):
     for nr,nc in ([r-1,c],[r,c+1],[r,c-1],[r+1,c]):
         if 0 <= nr <= n-1 and 0 <= nc <= n-1:
             if grid[nr,nc] == grid[r,c]:
-                solve(grid,nr,nc,regions,region,n)
+                flood_fill(grid,nr,nc,regions,region,n)
 
-
-def compute(grid:np.ndarray[str]) -> None:
+def solve(grid:np.ndarray[str]) -> int:
 
     n = len(grid)
 
@@ -32,7 +28,7 @@ def compute(grid:np.ndarray[str]) -> None:
         for c in range(n):
             if regions[r,c] == 0:
                 region += 1
-                solve(grid,r,c,regions,region,n)
+                flood_fill(grid,r,c,regions,region,n)
 
     _, region_size = np.unique(regions, return_counts=True)
 
@@ -49,19 +45,13 @@ def compute(grid:np.ndarray[str]) -> None:
 
     result = sum(size * perimeters[i+1] for i, size in enumerate(region_size))
 
-    print(result)
-
-    answer = 1477762
-    if answer:
-        assert(result == answer)
-
-
+    return result
 @timer
 def main() -> None:
 
-    data = get_data(sys.argv[1])
-    compute(data)
-
+    data = load_data("data.txt")
+    result = solve(data)
+    print(f"result: {result}")
 
 if __name__ == "__main__":
     main()

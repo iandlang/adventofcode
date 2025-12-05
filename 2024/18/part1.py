@@ -2,11 +2,9 @@ import numpy as np
 import sys
 from decorators.timer import timer
 
-
-def get_data(file:str) -> np.ndarray[str]:
+def load_data(file:str) -> np.ndarray[str]:
 
     return np.genfromtxt(file, comments=None, delimiter=",", dtype=int)
-
 
 def pause():
 
@@ -15,10 +13,10 @@ def pause():
     print("Exiting program.")
     sys.exit()
 
+def solve(data:np.ndarray[str]) -> int:
+    sys.setrecursionlimit(100000)
 
-def compute(data:np.ndarray[str]) -> None:
-
-    def solve(grid, loc, moves=0):
+    def solve_helper(grid, loc, moves=0):
 
         r,c = loc
 
@@ -47,15 +45,14 @@ def compute(data:np.ndarray[str]) -> None:
             print(f"{moves} moves")
             pause()
 
-        solve(grid, [r-1,c], moves+1)
-        solve(grid, [r,c+1], moves+1)
-        solve(grid, [r+1,c], moves+1)
-        solve(grid, [r,c-1], moves+1)
+        solve_helper(grid, [r-1,c], moves+1)
+        solve_helper(grid, [r,c+1], moves+1)
+        solve_helper(grid, [r+1,c], moves+1)
+        solve_helper(grid, [r,c-1], moves+1)
 
         grid[r,c] = "."
 
-
-    if sys.argv[1] == "test.txt":
+    if "data.txt" == "test.txt":
         n = 7
         b = 12
     else:
@@ -72,23 +69,15 @@ def compute(data:np.ndarray[str]) -> None:
     scores = []
     visited = dict()
     sr,sc = s
-    solve(grid,s)
+    solve_helper(grid,s)
 
     result = min(scores)
-    print(result)
-
-    answer = None
-    if answer:
-        assert(result == answer)
-
-
+    return result
 @timer
 def main() -> None:
-
-    sys.setrecursionlimit(10000)
-    data = get_data(sys.argv[1])
-    compute(data)
-
+    data = load_data("data.txt")
+    result = solve(data)
+    print(f"result: {result}")
 
 if __name__ == "__main__":
     main()

@@ -1,47 +1,42 @@
 import numpy as np
 import re
-import sys
 from decorators.timer import timer
 from functools import cache
 
-def get_data(file:str) -> np.ndarray[str]:
-
+def load_data(file: str) -> dict:
     with open(file) as f:
-       carpets, patterns = f.read().split("\n\n")
+        carpets, patterns = f.read().split("\n\n")
 
     carpets = tuple(carpets.split(", "))
     patterns = tuple(patterns.splitlines())
 
-    return carpets, patterns
+    return {'carpets': carpets, 'patterns': patterns}
 
 
 @cache
-def solve(pattern, carpets):
-
+def count_matches(pattern, carpets):
     if pattern == '':
         return 1
     else:
-        return sum(solve(pattern[re.match(carpet, pattern).end():], carpets) for carpet in carpets if re.match(carpet, pattern))
+        return sum(count_matches(pattern[re.match(carpet, pattern).end():], carpets) for carpet in carpets if re.match(carpet, pattern))
 
 
-def compute(carpets, patterns) -> None:
+def solve(data: dict) -> int:
+    import sys
+    sys.setrecursionlimit(10000)
 
+    carpets = data['carpets']
+    patterns = data['patterns']
 
-    result = sum(solve(pattern,carpets) for pattern in patterns)
-    print(result)
-
-    answer = 758839075658876
-    if answer:
-        assert(result == answer)
+    result = sum(count_matches(pattern, carpets) for pattern in patterns)
+    return result
 
 
 @timer
 def main() -> None:
-
-    sys.setrecursionlimit(10000)
-    carpets, patterns  = get_data(sys.argv[1])
-    compute(carpets, patterns)
-
+    data = load_data("data.txt")
+    result = solve(data)
+    print(f"result: {result}")
 
 if __name__ == "__main__":
     main()

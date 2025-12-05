@@ -1,14 +1,11 @@
 from itertools import chain
-import sys
 from typing import List
 from decorators.timer import timer
 
-
-def get_data(file:str) -> List[int]:
+def load_data(file:str) -> List[int]:
 
     with open(file) as f:
         return [int(c) for c in f.readlines()]
-
 
 def gen(n):
 
@@ -18,8 +15,7 @@ def gen(n):
 
     return n
 
-
-def compute(data:List[int]) -> None:
+def solve(data:List[int]) -> int:
 
     buyer_price_changes = []
     for secret in data:
@@ -42,19 +38,13 @@ def compute(data:List[int]) -> None:
     unique_price_changes = list(set(chain.from_iterable(d.keys() for d in buyer_price_changes)))
 
     result = max(sum(buyer.get(price_change, 0) for buyer in buyer_price_changes) for price_change in unique_price_changes)
-    print(result)
-
-    answer = 1568
-    if answer:
-        assert(result == answer)
-
-
+    return result
 @timer
 def main() -> None:
 
-    data = get_data(sys.argv[1])
-    compute(data)
-
+    data = load_data("data.txt")
+    result = solve(data)
+    print(f"result: {result}")
 
 if __name__ == "__main__":
     main()

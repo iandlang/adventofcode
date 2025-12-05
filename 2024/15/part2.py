@@ -1,21 +1,19 @@
 import numpy as np
-import sys
 from decorators.timer import timer
 
-
-def get_data(file:str) -> np.ndarray[str]:
-
-
+def load_data(file: str) -> dict:
     with open(file) as f:
-        grid,moves = f.read().split("\n\n")
+        grid, moves = f.read().split("\n\n")
 
     grid = np.array([list(line) for line in grid.splitlines()])
     moves = ' '.join(moves.splitlines())
 
-    return grid,moves
+    return {'grid': grid, 'moves': moves}
 
 
-def compute(grid:np.ndarray[str], moves:str) -> None:
+def solve(data: dict) -> int:
+    grid = data['grid']
+    moves = data['moves']
 
     def add2move(r,c,d):
 
@@ -131,19 +129,14 @@ def compute(grid:np.ndarray[str], moves:str) -> None:
     ri, ci = np.where(grid == "[")
     result = np.sum(100 * ri + ci)
 
-    print(result)
-
-    answer = 1432898
-    if answer:
-        assert(result == answer)
+    return result
 
 
 @timer
 def main() -> None:
-
-    grid,moves = get_data(sys.argv[1])
-    compute(grid,moves)
-
+    data = load_data("data.txt")
+    result = solve(data)
+    print(f"result: {result}")
 
 if __name__ == "__main__":
     main()

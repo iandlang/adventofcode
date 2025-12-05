@@ -1,31 +1,26 @@
-import re
-import sys
-from typing import List
+from decorators.timer import timer
 
 
-def get_data(file:str) -> List[List[int]]:
-
-    with open(sys.argv[1]) as f:
+def load_data(file: str) -> list[list[int]]:
+    with open(file) as f:
         return [[int(x) for x in line.strip().split(" ")] for line in f]
 
 
-def compute(data:List[List[int]]) -> None:
-
+def solve(data: list[list[int]]) -> int:
     result = 0
-
     for line in data:
-        tuples = list(zip(line,line[1:]))
+        tuples = list(zip(line, line[1:]))
         diffs = [abs(b - a) for a, b in tuples]
         signs = [b > a for a, b in tuples]
         result += min(diffs) > 0 and max(diffs) < 4 and len(set(signs)) == 1
+    return result
 
-    print(result)
 
-
+@timer
 def main() -> None:
-
-    data = get_data(sys.argv[1])
-    compute(data)
+    data = load_data("data.txt")
+    result = solve(data)
+    print(f"result: {result}")
 
 
 if __name__ == "__main__":

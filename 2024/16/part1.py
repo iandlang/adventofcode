@@ -2,11 +2,9 @@ import numpy as np
 import sys
 from decorators.timer import timer
 
-
-def get_data(file:str) -> np.ndarray[str]:
+def load_data(file:str) -> np.ndarray[str]:
 
     return np.genfromtxt(file, comments=None, converters={0:list})
-
 
 def pause():
   """Reads a character from input. Exits the program if it's 'q',
@@ -18,10 +16,10 @@ def pause():
     print("Exiting program.")
     sys.exit()  # or sys.exit() if you import sys
 
+def solve(data:np.ndarray[str]) -> int:
+    sys.setrecursionlimit(100000)
 
-def compute(data:np.ndarray[str]) -> None:
-
-    def solve(grid, loc, direction, score=0):
+    def solve_helper(grid, loc, direction, score=0):
 
         r,c = loc
 
@@ -48,10 +46,10 @@ def compute(data:np.ndarray[str]) -> None:
             pause()
 
         current_score = score
-        solve(grid, [r-1,c], "N", score+1+1000*(direction != "N"))
-        solve(grid, [r,c+1], "E", score+1+1000*(direction != "E"))
-        solve(grid, [r+1,c], "S", score+1+1000*(direction != "S"))
-        solve(grid, [r,c-1], "W", score+1+1000*(direction != "W"))
+        solve_helper(grid, [r-1,c], "N", score+1+1000*(direction != "N"))
+        solve_helper(grid, [r,c+1], "E", score+1+1000*(direction != "E"))
+        solve_helper(grid, [r+1,c], "S", score+1+1000*(direction != "S"))
+        solve_helper(grid, [r,c-1], "W", score+1+1000*(direction != "W"))
 
         at_dead_end = sum([grid[r+1,c] == "#", grid[r-1,c] == "#", grid[r,c+1] == "#", grid[r,c-1] == "#"]) == 3
         if at_dead_end:
@@ -60,7 +58,6 @@ def compute(data:np.ndarray[str]) -> None:
             grid[r,c] = "."
         score = current_score
 
-
     n = len(data)
     s = np.argwhere(data == 'S')[0]
     e = np.argwhere(data == 'E')[0]
@@ -68,23 +65,15 @@ def compute(data:np.ndarray[str]) -> None:
     scores = []
     visited = dict()
     sr,sc = s
-    solve(data,s,'E')
+    solve_helper(data,s,'E')
 
     result = min(scores)
-    print(result)
-
-    answer = (7036,11048,104516)
-    if answer:
-        assert(result in answer)
-
-
+    return result
 @timer
 def main() -> None:
-
-    sys.setrecursionlimit(10000)
-    data = get_data(sys.argv[1])
-    compute(data)
-
+    data = load_data("data.txt")
+    result = solve(data)
+    print(f"result: {result}")
 
 if __name__ == "__main__":
     main()

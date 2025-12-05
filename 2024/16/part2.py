@@ -4,15 +4,14 @@ from decorators.timer import timer
 
 min_score = 999999
 
-def get_data(file:str) -> np.ndarray[str]:
+def load_data(file:str) -> np.ndarray[str]:
 
     return np.genfromtxt(file, comments=None, converters={0:list})
 
+def solve(data:np.ndarray[str]) -> int:
+    sys.setrecursionlimit(100000)
 
-def compute(data:np.ndarray[str]) -> None:
-
-
-    def solve(grid, loc, direction, score=0):
+    def solve_helper(grid, loc, direction, score=0):
 
         global min_score
 
@@ -47,20 +46,19 @@ def compute(data:np.ndarray[str]) -> None:
 
         current_score = score
         if r > 0 and grid[r-1,c] in (".","E"):
-            solve(grid, [r-1,c], "N", score+1+1000*(direction != "N"))
+            solve_helper(grid, [r-1,c], "N", score+1+1000*(direction != "N"))
 
         if c < n-1 and grid[r,c+1] in (".","E"):
-            solve(grid, [r,c+1], "E", score+1+1000*(direction != "E"))
+            solve_helper(grid, [r,c+1], "E", score+1+1000*(direction != "E"))
 
         if r < n-1 and grid[r+1,c] in (".","E"):
-            solve(grid, [r+1,c], "S", score+1+1000*(direction != "S"))
+            solve_helper(grid, [r+1,c], "S", score+1+1000*(direction != "S"))
 
         if c > 0 and grid[r,c-1] in (".","E"):
-            solve(grid, [r,c-1], "W", score+1+1000*(direction != "W"))
+            solve_helper(grid, [r,c-1], "W", score+1+1000*(direction != "W"))
 
         grid[r,c] = "."
         score = current_score
-
 
     n = len(data)
     s = np.argwhere(data == 'S')[0]
@@ -71,27 +69,19 @@ def compute(data:np.ndarray[str]) -> None:
     visited = dict()
     sr,sc = s
     min_score = 99999999
-    solve(data,s,'E')
+    solve_helper(data,s,'E')
 
     visited=np.zeros(data.shape, dtype=int)
     ROWS,COLS = visited.shape
 
     result = np.count_nonzero(paths)
 
-    print(result)
-
-    answer = (45,64,545)
-    if answer:
-        assert(result in answer)
-
-
+    return result
 @timer
 def main() -> None:
-
-    sys.setrecursionlimit(10000)
-    data = get_data(sys.argv[1])
-    compute(data)
-
+    data = load_data("data.txt")
+    result = solve(data)
+    print(f"result: {result}")
 
 if __name__ == "__main__":
     main()

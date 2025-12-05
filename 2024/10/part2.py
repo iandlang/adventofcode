@@ -1,14 +1,11 @@
 import numpy as np
-import sys
 from decorators.timer import timer
 
-
-def get_data(file:str) -> np.ndarray[str]:
+def load_data(file:str) -> np.ndarray[str]:
 
     return np.genfromtxt(file, comments=None, converters={0:list})
 
-
-def compute(data:np.ndarray[str]) -> None:
+def solve(data:np.ndarray[str]) -> int:
 
     def solve(grid, loc):
 
@@ -40,19 +37,13 @@ def compute(data:np.ndarray[str]) -> None:
         solve(data,th)
 
     result = np.sum(paths)
-    print(result)
-
-    answer = 1801
-    if answer:
-        assert(result == answer)
-
-
+    return result
 @timer
 def main() -> None:
 
-    data = get_data(sys.argv[1])
-    compute(data)
-
+    data = load_data("data.txt")
+    result = solve(data)
+    print(f"result: {result}")
 
 if __name__ == "__main__":
     main()

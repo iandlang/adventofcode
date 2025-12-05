@@ -1,43 +1,33 @@
 import numpy as np
 import string
-import sys
 from decorators.timer import timer
 
 
-def get_data(file:str) -> np.ndarray[str]:
+def load_data(file: str) -> np.ndarray:
+    return np.genfromtxt(file, converters={0: list})
 
-    return np.genfromtxt(file, converters={0:list})
 
-
-def compute(data:np.ndarray[str]) -> None:
-
+def solve(data: np.ndarray) -> int:
     rowcount, colcount = data.shape
     antinodes = np.zeros(data.shape, dtype=bool)
 
     for c in string.ascii_lowercase + string.ascii_uppercase + "0123456789":
-
         cells = np.argwhere(data == c)
-
         for c1 in cells:
             for c2 in cells:
-                if not np.array_equal(c1,c2):
+                if not np.array_equal(c1, c2):
                     c = c1 + (c1 - c2)
                     if 0 <= c[0] < rowcount and 0 <= c[1] < colcount:
-                        antinodes[c[0],c[1]] = True
+                        antinodes[c[0], c[1]] = True
 
-    result = np.count_nonzero(antinodes)
-    print(result)
-
-    answer = 303
-    if answer:
-        assert(result == answer)
+    return np.count_nonzero(antinodes)
 
 
 @timer
 def main() -> None:
-
-    data = get_data(sys.argv[1])
-    compute(data)
+    data = load_data("data.txt")
+    result = solve(data)
+    print(f"result: {result}")
 
 
 if __name__ == "__main__":

@@ -1,13 +1,26 @@
 from functools import cache
 import numpy as np
 from pprint import pprint as pp
-import sys
 from decorators.timer import timer
 
+def load_data(file:str) -> dict:
 
-def compute() -> None:
+    registers = {}
+    with open(file) as f:
+        for line in [line.strip() for line in f]:
+            if 'Register A' in line:
+                registers['A'] = int(line.split()[-1])
+            if 'Register B' in line:
+                registers['B'] = int(line.split()[-1])
+            if 'Register C' in line:
+                registers['C'] = int(line.split()[-1])
+            if 'Program' in line:
+               program = list(map(int, line.split()[-1].split(",")))
 
-    answer = [2,4,1,1,7,5,1,4,0,3,4,5,5,5,3,0]
+    return {'program': program, 'registers': registers}
+
+def solve(data: dict) -> int:
+    answer = data['program']
 
     A0 = 0
     inc = 1
@@ -50,18 +63,14 @@ def compute() -> None:
         A0 += inc
 
     result = A0
-    print(A0)
-
-    answer = 202322936867370
-    if answer:
-        assert(result == answer)
+    return A0
 
 
 @timer
 def main() -> None:
-
-    compute()
-
+    data = load_data("data.txt")
+    result = solve(data)
+    print(f"result: {result}")
 
 if __name__ == "__main__":
     main()

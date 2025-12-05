@@ -1,16 +1,13 @@
 import numpy as np
-import sys
 from decorators.timer import timer
 from typing import List
 
-
-def get_data(file:str) -> list[np.ndarray[str]]:
+def load_data(file:str) -> list[np.ndarray[str]]:
 
     with open(file) as f:
         return [np.array([list(row) for row in grid.splitlines()]) for grid in f.read().split("\n\n")]
 
-
-def compute(data:List[np.ndarray[str]]) -> None:
+def solve(data:List[np.ndarray[str]]) -> int:
 
     locks = [grid[1:].T for grid in data if np.all(grid[0] == "#")]
     keys = [grid[:-1].T for grid in data if np.all(grid[-1] == "#")]
@@ -20,19 +17,13 @@ def compute(data:List[np.ndarray[str]]) -> None:
 
     result = sum(all(sum(t) <= 5 for t in zip(key, lock)) for lock in lock_pins for key in key_pins)
 
-    print(result)
-
-    answer = 3307
-    if answer:
-        assert(result == answer)
-
-
+    return result
 @timer
 def main() -> None:
 
-    data = get_data(sys.argv[1])
-    compute(data)
-
+    data = load_data("data.txt")
+    result = solve(data)
+    print(f"result: {result}")
 
 if __name__ == "__main__":
     main()

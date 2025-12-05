@@ -1,34 +1,29 @@
-import numpy as np
-import sys
 from decorators.timer import timer
-from typing import List
 
 
-def get_data(file:str) -> List[int]:
-
+def load_data(file: str) -> list[int]:
     with open(file) as f:
-        return [ int(c) for c in list(f.read().strip())]
+        return [int(c) for c in list(f.read().strip())]
 
 
-def compute(data:List[int]) -> None:
-
+def solve(data: list[int]) -> int:
     fs = []
     fn = 0
     while len(data) > 0:
         f, *data = data
-        fs.append([fn,f])
+        fs.append([fn, f])
         fn += 1
 
         if len(data) == 0:
             break
 
         f, *data = data
-        fs.append([-1,f])
+        fs.append([-1, f])
 
     for br in fs[::-1]:
         if br[0] == -1:
             continue
-        for i,b in enumerate(fs):
+        for i, b in enumerate(fs):
             if b[0] == br[0]:
                 break
             if b[0] == -1:
@@ -40,7 +35,7 @@ def compute(data:List[int]) -> None:
                     break
                 if b[1] > br[1]:
                     fs[i][1] -= br[1]
-                    fs.insert(i,br.copy())
+                    fs.insert(i, br.copy())
                     br[0] = -1
                     break
 
@@ -54,18 +49,14 @@ def compute(data:List[int]) -> None:
             result += b[0] * (p + (p + b[1] - 1)) * b[1] // 2
             p += b[1]
 
-    print(result)
-
-    answer = 6423258376982
-    if answer:
-        assert(result == answer)
+    return result
 
 
 @timer
 def main() -> None:
-
-    data = get_data(sys.argv[1])
-    compute(data)
+    data = load_data("data.txt")
+    result = solve(data)
+    print(f"result: {result}")
 
 
 if __name__ == "__main__":
