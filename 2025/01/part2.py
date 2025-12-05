@@ -2,7 +2,7 @@ from decorators.timer import timer
 
 def load_data(file: str) -> list[tuple[str, int]]:
     with open(file) as f:
-        return [(line[0], int(line[1:])) for line in map(str.strip, f)]
+        return [(line[0], int(line[1:])) for line in f.readlines()]
 
 def solve(data: list[tuple[str, int]]) -> int:
     pos = 50

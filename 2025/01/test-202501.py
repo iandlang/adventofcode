@@ -10,53 +10,36 @@ from part2 import load_data as load_data_p2, solve as solve_p2
 class TestPart1:
     """Tests for Part 1"""
 
+    EXPECTED = {
+        "test.txt": 3,
+        "data.txt": 1139,
+    }
+
     @pytest.mark.part1
     def test_solution(self, input_file):
-        """Test part 1 solution with specified input file"""
-        # Define expected values for each input file
-        expected_values = {
-            "test.txt": 3,
-            "data.txt": 1139,
-        }
-
-        start_time = default_timer()
+        """Test part 1 solution"""
+        start = default_timer()
         data = load_data_p1(input_file)
         result = solve_p1(data)
-        end_time = default_timer()
-        print(f"Part 1 - {input_file}: {result} ({end_time - start_time:.6f}s)")
-        expected = expected_values[input_file]
-
-        if expected is None:
-            pytest.skip(f"Expected value not set for {input_file}")
-
-        assert result == expected, f"Expected {expected}, got {result}"
+        elapsed = default_timer() - start
+        print(f"Part1 {input_file}: {result} ({elapsed:.6f}s)", flush=True)
+        assert result == self.EXPECTED[input_file]
 
 
 class TestPart2:
     """Tests for Part 2"""
 
+    EXPECTED = {
+        "test.txt": 6,
+        "data.txt": 6684,
+    }
+
     @pytest.mark.part2
     def test_solution(self, input_file):
-        """Test part 2 solution with specified input file"""
-        # Define expected values for each input file
-        expected_values = {
-            "test.txt": 6,
-            "data.txt": 6684,
-        }
-
-        start_time = default_timer()
+        """Test part 2 solution"""
+        start = default_timer()
         data = load_data_p2(input_file)
         result = solve_p2(data)
-        end_time = default_timer()
-        print(f"Part 2 - {input_file}: {result} ({end_time - start_time:.6f}s)")
-        expected = expected_values[input_file]
-
-        if expected is None:
-            pytest.skip(f"Expected value not set for {input_file}")
-
-        assert result == expected, f"Expected {expected}, got {result}"
-
-
-if __name__ == "__main__":
-    # Allow running tests directly
-    pytest.main([__file__, "-v"])
+        elapsed = default_timer() - start
+        print(f"Part2 {input_file}: {result} ({elapsed:.6f}s)", flush=True)
+        assert result == self.EXPECTED[input_file]
